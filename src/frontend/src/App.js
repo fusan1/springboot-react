@@ -1,10 +1,10 @@
 import {useState, useEffect} from 'react';
 import {getAllStudent} from "./client";
 
-import { Breadcrumb, Layout, Menu ,theme, Table} from 'antd';
+import {Breadcrumb, Layout, Menu, theme, Table, Spin, Empty} from 'antd';
 import {
     DesktopOutlined,
-    FileOutlined,
+    FileOutlined, LoadingOutlined,
     PieChartOutlined,
     TeamOutlined,
     UserOutlined,
@@ -53,9 +53,24 @@ function getItem(label, key, icon, children) {
         label,
     };
 }
+
+const app1 = () => (
+    <Spin
+        indicator={
+            <LoadingOutlined
+                style={{
+                    fontSize: 24,
+                }}
+                spin
+            />
+        }
+    />
+);
 function App() {
     const [students, setStudents] = useState([]);
     const [collapsed, setCollapsed] = useState(false);
+    const [fetching, setFetching] = useState(true);
+
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
@@ -65,7 +80,9 @@ function App() {
             .then(res => res.json())
             .then(data => {
                 console.log(data);
-                setStudents(data);})
+                setStudents(data);
+                setFetching(false);
+            })
 
     useEffect(() => {
         console.log("component is mounted");
@@ -73,10 +90,25 @@ function App() {
     }, []);
 
     const renderStudent = () => {
-        if(students.length <= 0){
-            return "no data available";
+        if(fetching){
+            return <Spin indicator={app1}/>
         }
-        return <Table dataSource={students} columns={columns} />;
+        if(students.length <= 0){
+            return <Empty />;
+        }
+        return <Table dataSource={students}
+                      columns={columns}
+                      bordered
+                      title={()=> "Students"}
+                      pagination={{
+                          pageSize: 50,
+                      }}
+                      scroll={{
+                          y: 240,
+                      }}
+                      rowKey={(student) => student.id}
+
+        />;
     }
     return <Layout
         style={{
@@ -123,7 +155,7 @@ function App() {
                     textAlign: 'center',
                 }}
             >
-                Ant Design ©{new Date().getFullYear()} Created by Ant UED
+                By Fusan
             </Footer>
         </Layout>
     </Layout>
