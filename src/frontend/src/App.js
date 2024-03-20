@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {getAllStudent} from "./client";
 
-import { Breadcrumb, Layout, Menu ,theme} from 'antd';
+import { Breadcrumb, Layout, Menu ,theme, Table} from 'antd';
 import {
     DesktopOutlined,
     FileOutlined,
@@ -21,6 +21,29 @@ const items = [
     ]),
     getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
     getItem('Files', '9', <FileOutlined />),
+];
+
+const columns = [
+    {
+        title: 'Id',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+    },
+    {
+        title: 'Email',
+        dataIndex: 'email',
+        key: 'email',
+    },
+    {
+        title: 'Gender',
+        dataIndex: 'gender',
+        key: 'gender',
+    },
 ];
 function getItem(label, key, icon, children) {
     return {
@@ -49,8 +72,11 @@ function App() {
         fetchStudents();
     }, []);
 
-    if (students.length <= 0){
-        return "no data";
+    const renderStudent = () => {
+        if(students.length <= 0){
+            return "no data available";
+        }
+        return <Table dataSource={students} columns={columns} />;
     }
     return <Layout
         style={{
@@ -89,7 +115,7 @@ function App() {
                         borderRadius: borderRadiusLG,
                     }}
                 >
-                    Bill is a cat.
+                    {renderStudent()}
                 </div>
             </Content>
             <Footer
